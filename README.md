@@ -15,6 +15,7 @@ This project demonstrates a FastAPI application using Beanie ODM (Object Documen
 
 <img width="275" alt="Screenshot 2024-06-30 at 5 00 35 PM" src="https://github.com/cyber-evangelists/NADRA-User-Registration-Backend-Task/assets/173667240/6b9e7931-eb2f-4a4f-9377-fb0dc5f292b0">
 
+- **protos/user.proto**: Defines the overall structure of the app schema and functionalities in a `universal syntax`. Its the very first step when working with grpcs. After defining the user.proto file, run the command (given in user.proto file) in the terminal to generate compiler constructed `user_pb2.py` and `user_pb2_grpc.py` files.
 - **routes/auth_handler.py**: Defines the `encoding` and `decoding` of `JWT Tokens`.
 - **routes/auth_bearer.py**: Defines the `JWT_Bearer` Class and verifies `JWT Tokens`.
 - **routes/app.py**: Contains the `API end points`, `JWT Authentication`, `Web Sockets` and proper `API Validations` for handling User APIS.
