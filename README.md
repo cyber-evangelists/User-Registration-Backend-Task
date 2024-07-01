@@ -125,6 +125,8 @@ This project demonstrates a FastAPI application using Beanie ODM (Object Documen
 
 <img width="729" alt="Screenshot 2024-06-30 at 5 33 06 PM" src="https://github.com/cyber-evangelists/NADRA-User-Registration-Backend-Task/assets/173667240/0755b766-590e-4e81-84c6-cc8822714162">
 
+<img width="344" alt="Screenshot 2024-06-30 at 5 50 27 PM" src="https://github.com/cyber-evangelists/NADRA-User-Registration-Backend-Task/assets/173667240/f473ab63-d9ed-462b-b18e-b375d3391d5e">
+
 ### Model Schemas 🧩
 
 <img width="1157" alt="Screenshot 2024-06-30 at 5 26 26 PM" src="https://github.com/cyber-evangelists/NADRA-User-Registration-Backend-Task/assets/173667240/da0c7def-e27a-4eb7-a628-aa469d29f012">
