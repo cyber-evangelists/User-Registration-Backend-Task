@@ -18,10 +18,10 @@ This project demonstrates a FastAPI application using Beanie ODM (Object Documen
 - **protos/user.proto**: Defines the overall structure of the app schema and functionalities in a `universal syntax`. Its the very first step when working with grpcs. After defining the user.proto file, run the command (given in user.proto file) in the terminal to generate compiler constructed `user_pb2.py` and `user_pb2_grpc.py` files.
 - **routes/auth_handler.py**: Defines the `encoding` and `decoding` of `JWT Tokens`.
 - **routes/auth_bearer.py**: Defines the `JWT_Bearer` Class and verifies `JWT Tokens`.
-- **routes/app.py**: Contains the `API end points`, `JWT Authentication`, `Web Sockets` and proper `API Validations` for handling User APIS.
+- **routes/app.py**: Contains the `API end points`, `JWT Authentication`, and proper `API Validations` for handling User APIS.
 - **server/models.py**: Defines the `User` and `UserModel` and `UserUpdateModel` models using `Beanie` and `Pydantic`.
 - **app/server/db.py**: Contains the `database initialization logic`.
-- **server/app.py**: Contains the `gRPC calls`, `DB initiallization on startup`, `Web Sockets` and `User Data storage in DB` from the endpoints.
+- **server/app.py**: Contains the `gRPC calls`, `DB initiallization on startup`, and `User Data storage in DB` from the endpoints.
 - **main.py**: The entry point for running the `Uvicorn server`.
 - **Dockerfile**: The `Dockerfile` for building the routes/server images.
 - **docker-compose.yml**: `Docker Compose file` for setting up the `FastAPI` and `MongoDB services`.
