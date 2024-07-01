@@ -46,13 +46,10 @@ This project demonstrates a FastAPI application using Beanie ODM (Object Documen
 4. Dockerization:
 - Containerized the application using Docker for easy deployment and scalability. [Its also deployed on Docker-Hub](https://hub.docker.com/r/saadarazzaq/nadra-user-registration-api) 🐳🙂
 
-5. WebSockets:
-- Integrated WebSockets for real-time communication between routes and server.
-
-6. Swagger Documentation:
+5. Swagger Documentation:
 - Provided comprehensive Swagger documentation for the API.
 
-7. PEP8 Standards of code:
+6. PEP8 Standards of code:
 - Followed PEP8 Standards of Python syntax
 
 ## Major Tasks Performed: 🛠️
@@ -78,15 +75,12 @@ This project demonstrates a FastAPI application using Beanie ODM (Object Documen
 5. Dockerization:
 - Created Dockerfile for the FastAPI application.
 - Setup Docker Compose for multi-container setup (including MongoDB).
-  
-6. WebSockets Integration:
-- Implemented WebSockets for real-time features.
 
-7. Swagger Documentation:
+6. Swagger Documentation:
 - Added Swagger documentation for all the endpoints.
 - Ensured all routes, models, and authentication are properly documented.
 
-8. Code Structure:
+7. Code Structure:
 - Ensured modularity while coding.
 - Followed PEP8 standards of coding throughout the project.
 
