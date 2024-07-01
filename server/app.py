@@ -5,8 +5,6 @@ import grpc
 import user_pb2
 import user_pb2_grpc
 
-from fastapi import WebSocket, WebSocketDisconnect
-
 from concurrent import futures
 from typing import List
 import asyncio
@@ -27,51 +25,6 @@ async def on_startup():
     await init_db()
     logger.info("Database connection initialized")
 
-# Implemented websockets class
-
-
-class ConnectionManager:
-
-    """
-    Manages WebSocket connections for broadcasting messages.
-    """
-
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        """
-        Accepts a new WebSocket connection.
-
-        """
-
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        """
-        Removes a WebSocket connection.
-        """
-
-        self.active_connections.remove(websocket)
-
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        """
-        Sends a personal message to a specific WebSocket connection.
-        """
-
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        """
-        Broadcasts a message to all active WebSocket connections.
-        """
-
-        for connection in self.active_connections:
-            await connection.send_text(message)
-
-
-manager = ConnectionManager()
 
 # gRPC servicer class
 
@@ -104,9 +57,6 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
         if user:
             logger.info(f"User found: {user}")
 
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Found")
-
             return user_pb2.GetUserResponse(
                 cnic=user.cnic,
                 forename=user.forename,
@@ -117,8 +67,6 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
         else:
             context.set_details("User not found")
             context.set_code(grpc.StatusCode.NOT_FOUND)
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Not Found")
             logger.warning(f"User with CNIC {request.cnic} not found")
             return user_pb2.GetUserResponse()
 
@@ -146,9 +94,6 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             context.set_code(grpc.StatusCode.ALREADY_EXISTS)
             logger.warning(f"User with CNIC {request.cnic} already exists")
 
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Already Exists")
-
             return user_pb2.PostUserResponse()
 
         try:
@@ -162,9 +107,6 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             )
             await new_user.insert()
             logger.info(f"User created: {new_user}")
-
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Created")
 
             return user_pb2.PostUserResponse(
                 message="User created successfully")
@@ -203,18 +145,12 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             await user.save()
             logger.info(f"User updated: {user}")
 
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Updated")
-
             return user_pb2.PutUserResponse(
                 message="User updated successfully")
         else:
             context.set_details("User not found")
             context.set_code(grpc.StatusCode.NOT_FOUND)
             logger.warning(f"User with CNIC {request.cnic} not found")
-
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Not Found")
 
             return user_pb2.PutUserResponse()
 
@@ -241,18 +177,12 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             await user.delete()
             logger.info(f"User with CNIC {request.cnic} deleted")
 
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Deleted")
-
             return user_pb2.DeleteUserResponse(
                 message="User deleted successfully")
         else:
             context.set_details("User not found")
             context.set_code(grpc.StatusCode.NOT_FOUND)
             logger.warning(f"User with CNIC {request.cnic} not found")
-
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Not Found")
 
             return user_pb2.DeleteUserResponse(message="User not found")
 
