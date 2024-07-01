@@ -3,7 +3,6 @@ from models import UserModel, UserUpdateModel
 from auth_handler import sign_jwt, decode_jwt
 from auth_bearer import JWTBearer
 
-from fastapi import WebSocket, WebSocketDisconnect
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse
 
@@ -26,53 +25,6 @@ app = FastAPI(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Implemented websockets class
-
-
-class ConnectionManager:
-
-    """
-    Manages WebSocket connections for broadcasting messages.
-    """
-
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        """
-        Accepts a new WebSocket connection.
-
-        """
-
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        """
-        Removes a WebSocket connection.
-        """
-
-        self.active_connections.remove(websocket)
-
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        """
-        Sends a personal message to a specific WebSocket connection.
-        """
-
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        """
-        Broadcasts a message to all active WebSocket connections.
-        """
-
-        for connection in self.active_connections:
-            await connection.send_text(message)
-
-
-manager = ConnectionManager()
-
-
 async def get_grpc_stub():
     """
     Creates and returns a gRPC stub for communicating with the user service/server.
@@ -81,23 +33,6 @@ async def get_grpc_stub():
     channel = grpc.aio.insecure_channel('server:50051')
     stub = user_pb2_grpc.UserServiceStub(channel)
     return stub, channel
-
-
-@app.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    """
-    WebSocket endpoint for real-time communication.
-    """
-
-    await manager.connect(websocket)
-    try:
-        while True:
-            data = await websocket.receive_text()
-            await manager.send_personal_message(f"Message text was: {data}", websocket)
-            await manager.broadcast(f"Client #{client_id} says: {data}")
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{client_id} left the chat")
 
 
 @app.get("/")
@@ -185,9 +120,6 @@ async def create_user(user: UserModel):
 
         logger.info(f"Response from gRPC server: {response.message}")
 
-        # Broadcast message via WebSocket
-        await manager.broadcast(f"New user created: {user.forename} {user.surname}")
-
         return {"message": response.message, "token": token}
     except grpc.aio.AioRpcError as e:
         logger.error(f"Error creating user via gRPC: {e}")
@@ -226,9 +158,6 @@ async def get_user(cnic: int, token: str = Depends(JWTBearer())):
         if response.cnic != 0:
             logger.info(f"User found: {response}")
 
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User found")
-
             return {
                 "cnic": response.cnic,
                 "forename": response.forename,
@@ -238,9 +167,6 @@ async def get_user(cnic: int, token: str = Depends(JWTBearer())):
             }
         else:
             logger.info("User not found")
-
-            # Broadcast message via WebSocket
-            await manager.broadcast(f"User Not found")
 
             return {"message": "User not found"}
 
@@ -326,9 +252,6 @@ async def update_user(cnic: int, user: UserUpdateModel,
         ))
         logger.info(f"Response from gRPC server: {response.message}")
 
-        # Broadcast message via WebSocket
-        await manager.broadcast(f"User Updated: {user.forename} {user.surname}")
-
         return {"message": response.message}
 
     except grpc.aio.AioRpcError as e:
@@ -366,9 +289,6 @@ async def delete_user(cnic: int, token: str = Depends(JWTBearer())):
     try:
         response = await stub.DeleteUserRPC(user_pb2.DeleteUserRequest(cnic=cnic))
         logger.info(f"Response from gRPC server: {response.message}")
-
-        # Broadcast message via WebSocket
-        await manager.broadcast(f"User Deleted")
 
         return {"message": response.message}
     except grpc.aio.AioRpcError as e:
